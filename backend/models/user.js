@@ -1,22 +1,22 @@
 const mongoose = require('mongoose');
 const isEmail = require('validator/lib/isEmail');
+const bcrypt = require('bcryptjs');
 
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Recuerda agregar un nombre'],
     minlength: 2,
     maxlength: 30,
+    default: 'Jacques Cousteau',
   },
   about: {
     type: String,
-    required: [true, 'Recuerda agregar una descripción'],
     minlength: 2,
     maxlength: 30,
+    default: 'Explorador',
   },
   avatar: {
     type: String,
-    required: [true, 'Requiere un enlace a la imagen de perfil'],
     validate: {
       validator(v) {
         return /^(http(s):\/\/.)[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)$/.test(
@@ -24,6 +24,7 @@ const userSchema = new mongoose.Schema({
         );
       },
       message: 'Por favor intenta una URL Valida.',
+      default: 'https://pictures.s3.yandex.net/resources/avatar_1604080799.jpg',
     },
   },
   email: {
@@ -36,6 +37,32 @@ const userSchema = new mongoose.Schema({
       message: 'Formato de correo electrónico incorrecto',
     },
   },
+  password: {
+    type: String,
+    required: [true, 'Requiere una contraseña'],
+    minlength: 8,
+  },
 });
+
+userSchema.statics.findUserByCredentials = function findUserByCredentials(
+  email,
+  password,
+) {
+  return this.findOne({ email }).then((user) => {
+    if (!user) {
+      return Promise.reject(
+        new Error('Correo o contraseña incorrectos. Intenta de nuevo'),
+      );
+    }
+    return bcrypt.compare(password, user.password).then((matched) => {
+      if (!matched) {
+        return Promise.reject(
+          new Error('Correo o contraseña incorrectos. Intenta de nuevo'),
+        );
+      }
+      return user;
+    });
+  });
+};
 
 module.exports = mongoose.model('user', userSchema);

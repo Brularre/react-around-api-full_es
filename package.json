@@ -2,7 +2,7 @@
   "name": "react-around-api-full_es",
   "version": "1.0.0",
   "description": "Proyecto Sprint 15 de Bootcamp Practicum Latam",
-  "main": "app.js",
+  "main": "./backend/app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "npx eslint .",
@@ -33,7 +33,10 @@
     "nodemon": "^2.0.20"
   },
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "celebrate": "^15.0.1",
     "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.8.3",
     "validator": "^13.7.0"
   }

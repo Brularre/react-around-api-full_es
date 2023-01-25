@@ -1,21 +1,9 @@
+const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+
 const User = require('../models/user');
 
-function createUser(req, res) {
-  const { name, about, avatar } = req.body;
-  User.create({ name, about, avatar })
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400);
-      } else {
-        res.status(500);
-      }
-      res
-        .status(500)
-        .send({ message: 'Tuvimos un problema. Intentalo más tarde.' });
-    });
-}
-
+// User DB Interaction
 function getUsers(req, res) {
   User.find({})
     .then((users) => res.send({ data: users }))
@@ -35,6 +23,24 @@ function getUser(req, res) {
         res.status(400);
       } else {
         res.status(500);
+      }
+      res
+        .status(500)
+        .send({ message: 'Tuvimos un problema. Intentalo más tarde.' });
+    });
+}
+
+function createUser(req, res) {
+  const { name, about, avatar, email } = req.body;
+  bcrypt
+    .hash(req.body.password, 10)
+    .then((password) => User.create({ name, about, avatar, email, password }))
+    .then((user) => res.status(201).send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'ValidationError') {
+        res.status(400).send(err);
+      } else {
+        res.status(500).send({ message: err });
       }
       res
         .status(500)
@@ -89,10 +95,28 @@ function updateAvatar(req, res) {
     });
 }
 
+// User Authentication
+
+function login(req, res) {
+  const { email, password } = req.body;
+
+  return User.findUserByCredentials(email, password)
+    .then((user) => {
+      const token = jwt.sign({ _id: user._id }, 'salt-temporal', {
+        expiresIn: '7d',
+      });
+      res.send({ token });
+    })
+    .catch((err) => {
+      res.status(401).send({ message: err.message });
+    });
+}
+
 module.exports = {
   createUser,
   getUsers,
   getUser,
   updateProfile,
   updateAvatar,
+  login,
 };
