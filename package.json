@@ -27,6 +27,7 @@
   },
   "homepage": "https://github.com/Brularre/react-around-api-full_es#readme",
   "devDependencies": {
+    "crypto": "^1.0.1",
     "eslint": "^8.31.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.26.0",
@@ -35,6 +36,7 @@
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "celebrate": "^15.0.1",
+    "dotenv": "^16.0.3",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.0",
     "mongoose": "^6.8.3",

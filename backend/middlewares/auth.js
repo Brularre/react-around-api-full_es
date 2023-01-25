@@ -1,7 +1,8 @@
 const jwt = require('jsonwebtoken');
+const ValidationError = require('../errors/validation-err');
 
-const handleAuthError = (res) => {
-  res.status(401).send({ message: 'Se requiere autorización' });
+const handleAuthError = () => {
+  throw new ValidationError('Se requiere autorización');
 };
 
 const extractBearerToken = (header) => header.replace('Bearer ', '');
@@ -9,7 +10,7 @@ const extractBearerToken = (header) => header.replace('Bearer ', '');
 function auth(req, res, next) {
   const { authorization } = req.headers;
   if (!authorization || !authorization.startsWith('Bearer ')) {
-    return handleAuthError(res);
+    return handleAuthError();
   }
   const token = extractBearerToken(authorization);
   let payload;
@@ -17,7 +18,7 @@ function auth(req, res, next) {
   try {
     payload = jwt.verify(token, 'salt-temporal');
   } catch (err) {
-    return handleAuthError(res);
+    return handleAuthError();
   }
   req.user = payload;
 

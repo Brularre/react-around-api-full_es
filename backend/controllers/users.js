@@ -1,50 +1,48 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-
 const User = require('../models/user');
+require('dotenv').config();
+
+const NotFoundError = require('../errors/not-found-err');
+const RequestError = require('../errors/request-err');
+const ValidationError = require('../errors/validation-err');
+
+// const { NODE_ENV, JWT_SECRET } = process.env;
 
 // User DB Interaction
-function getUsers(req, res) {
+
+function getUsers(req, res, next) {
   User.find({})
     .then((users) => res.send({ data: users }))
-    .catch((err) => res.status(500).send({ message: err }));
+    .catch(next);
 }
 
-function getUser(req, res) {
+function getUser(req, res, next) {
   User.findById(req.params.id)
     .orFail(() => {
-      const error = new Error('No se encuentra usuario con esa id');
-      error.statusCode = 404;
-      throw error;
+      throw new NotFoundError('No se encuentra usuario con esa id');
     })
-    .then((users) => res.send({ data: users }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400);
-      } else {
-        res.status(500);
+    .then((users) => {
+      if (!users) {
+        throw new RequestError('Hay un problema con la solicitud');
       }
-      res
-        .status(500)
-        .send({ message: 'Tuvimos un problema. Intentalo más tarde.' });
-    });
+      res.send({ data: users });
+    })
+    .catch(next);
 }
 
-function getCurrentUser(req, res) {
+function getCurrentUser(req, res, next) {
   User.findById(req.user._id)
-    .then((user) => res.send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400);
-      } else {
-        res
-          .status(500)
-          .send({ message: 'Tuvimos un problema. Intentalo más tarde.' });
+    .then((user) => {
+      if (!user) {
+        throw new RequestError('Hay un problema con la solicitud');
       }
-    });
+      res.send({ data: user });
+    })
+    .catch(next);
 }
 
-function createUser(req, res) {
+function createUser(req, res, next) {
   const { name, about, avatar, email } = req.body;
   bcrypt
     .hash(req.body.password, 10)
@@ -52,17 +50,13 @@ function createUser(req, res) {
     .then((user) => res.status(201).send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400).send(err);
-      } else {
-        res.status(500).send({ message: err });
+        throw new ValidationError('Hay un problema con los datos');
       }
-      res
-        .status(500)
-        .send({ message: 'Tuvimos un problema. Intentalo más tarde.' });
+      next();
     });
 }
 
-function updateProfile(req, res) {
+function updateProfile(req, res, next) {
   const { name, about } = req.body;
   User.findByIdAndUpdate(
     req.params.id,
@@ -72,23 +66,22 @@ function updateProfile(req, res) {
     },
     { runValidators: true, new: true },
   )
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (!user) {
+        throw new RequestError('Hay un problema con la solicitud');
+      }
+      res.send({ data: user });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400);
-      } else {
-        res.status(500);
+        throw new ValidationError('Hay un problema con los datos');
       }
-      res
-        .status(500)
-        .send({ message: 'Tuvimos un problema. Intentalo más tarde.' });
+      next();
     });
 }
 
-function updateAvatar(req, res) {
-  console.log(req.body);
+function updateAvatar(req, res, next) {
   const { avatar } = req.body;
-
   User.findByIdAndUpdate(
     req.params.id,
     {
@@ -96,33 +89,41 @@ function updateAvatar(req, res) {
     },
     { runValidators: true, new: true },
   )
-    .then((user) => res.send({ data: user }))
+    .then((user) => {
+      if (!user) {
+        throw new RequestError('Hay un problema con la solicitud');
+      }
+      res.send({ data: user });
+    })
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        res.status(400);
-      } else {
-        res.status(500);
+        throw new ValidationError('Hay un problema con los datos');
       }
-      res
-        .status(500)
-        .send({ message: 'Tuvimos un problema. Intentalo más tarde.' });
+      next();
     });
 }
 
 // User Authentication
 
-function login(req, res) {
+function login(req, res, next) {
   const { email, password } = req.body;
-
   return User.findUserByCredentials(email, password)
     .then((user) => {
-      const token = jwt.sign({ _id: user._id }, 'salt-temporal', {
-        expiresIn: '7d',
-      });
+      const token = jwt.sign(
+        { _id: user._id },
+        // NODE_ENV === 'production' ? JWT_SECRET : 'secret-development',
+        'secret-development',
+        {
+          expiresIn: '7d',
+        },
+      );
       res.send({ token });
     })
     .catch((err) => {
-      res.status(401).send({ message: err.message });
+      if (err.name === 'ValidationError') {
+        throw new ValidationError('Correo o contraseña incorrectos');
+      }
+      next();
     });
 }
 

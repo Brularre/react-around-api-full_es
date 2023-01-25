@@ -1,93 +1,76 @@
 const Card = require('../models/card');
+const NotFoundError = require('../errors/not-found-err');
+const RequestError = require('../errors/request-err');
 
-function createCard(req, res) {
+function createCard(req, res, next) {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
-    .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        res.status(400);
-      } else {
-        res.status(500);
+    .then((card) => {
+      if (!card) {
+        throw new RequestError('Hay un problema con la solicitud');
       }
-      res
-        .status(500)
-        .send({ message: 'Tuvimos un problema. Intentalo más tarde.' });
-    });
+      res.send({ data: card });
+    })
+    .catch(next);
 }
 
-function getCards(req, res) {
+function getCards(req, res, next) {
   Card.find({})
-    .then((cards) => res.send({ data: cards }))
-    .catch(() => {
-      res
-        .status(500)
-        .send({ message: 'Tuvimos un problema. Intentalo más tarde.' });
-    });
+    .then((cards) => {
+      res.send({ data: cards });
+    })
+    .catch(next);
 }
 
-function deleteCard(req, res) {
+function deleteCard(req, res, next) {
   Card.findByIdAndRemove(req.params.id)
     .orFail(() => {
-      const error = new Error('No se encuentra una tarjeta con esa id');
-      error.statusCode = 404;
-      throw error;
+      throw new NotFoundError('No se encuentra una tarjeta con esa id');
     })
-    .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400);
-      } else {
-        res.status(500);
+    .then((card) => {
+      if (!card) {
+        throw new RequestError('Hay un problema con la solicitud');
       }
-      res
-        .status(500)
-        .send({ message: 'Tuvimos un problema. Intentalo más tarde.' });
-    });
+      res.send({ data: card });
+    })
+    .catch(next);
 }
 
-function likeCard(req, res) {
+function likeCard(req, res, next) {
   Card.findByIdAndUpdate(
     req.params.id,
     { $addToSet: { likes: req.user._id } },
     { new: true },
   )
     .orFail(() => {
-      const error = new Error('No se encuentra una tarjeta con esa id');
-      error.statusCode = 404;
-      throw error;
+      throw new NotFoundError('No se encuentra una tarjeta con esa id');
     })
-    .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400);
-      } else {
-        res.status(500);
+    .then((card) => {
+      if (!card) {
+        throw new RequestError('Hay un problema con la solicitud');
       }
-      res
-        .status(500)
-        .send({ message: 'Tuvimos un problema. Intentalo más tarde.' });
-    });
+      res.send({ data: card });
+    })
+    .catch(next);
 }
 
-function dislikeCard(req, res) {
+function dislikeCard(req, res, next) {
   Card.findByIdAndUpdate(
     req.params.id,
     { $pull: { likes: req.user._id } },
     { new: true },
   )
-    .then((card) => res.send({ data: card }))
-    .catch((err) => {
-      if (err.name === 'CastError') {
-        res.status(400);
-      } else {
-        res.status(500);
+    .orFail(() => {
+      throw new NotFoundError('No se encuentra una tarjeta con esa id');
+    })
+    .then((card) => {
+      if (!card) {
+        throw new RequestError('Hay un problema con la solicitud');
       }
-      res
-        .status(500)
-        .send({ message: 'Tuvimos un problema. Intentalo más tarde.' });
-    });
+      res.send({ data: card });
+    })
+    .catch(next);
 }
 
 module.exports = {

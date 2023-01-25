@@ -1,7 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
-const process = require('process');
-const { celebrate, Joi } = require('celebrate');
+const { celebrate, Joi, errors } = require('celebrate');
+require('dotenv').config();
 
 const { login, createUser } = require('./controllers/users');
 const auth = require('./middlewares/auth');
@@ -9,6 +9,8 @@ const cardsRouter = require('./routes/cards');
 const usersRouter = require('./routes/users');
 
 const app = express();
+const { PORT = 3000 } = process.env;
+
 mongoose.set('strictQuery', false);
 mongoose.connect('mongodb://127.0.0.1:27017/aroundb');
 const db = mongoose.connection;
@@ -18,17 +20,6 @@ db.once('open', () => console.log('Connected successfully to database'));
 // Rutas y Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-process.on('uncaughtException', (err, origin) => {
-  throw new Error(`${origin} ${err.name}: ${err.message}.`);
-});
-
-app.use((req, res, next) => {
-  req.user = {
-    _id: '63d145ce6b342b3e643cd435',
-  };
-  next();
-});
 
 // Rutas abiertas
 app.post('/signin', login);
@@ -53,11 +44,17 @@ app.use('/', usersRouter);
 
 // Control de errores
 
-app.use((req, res) => {
-  res.status(404).send({ message: 'Recurso solicitado no encontrado.' });
+app.use(errors());
+
+app.use((err, req, res, next) => {
+  const { statusCode, message } = err;
+  res
+    .status(statusCode || 500)
+    .send(
+      { message } || { message: 'Tuvimos un problema. Intentalo más tarde.' },
+    );
 });
 
-const { PORT = 3000 } = process.env;
 app.listen(PORT, () => {
   console.log(`Server is running at port ${PORT}`);
 });
