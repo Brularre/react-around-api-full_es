@@ -4,6 +4,7 @@ const process = require('process');
 const { celebrate, Joi } = require('celebrate');
 
 const { login, createUser } = require('./controllers/users');
+const auth = require('./middlewares/auth');
 const cardsRouter = require('./routes/cards');
 const usersRouter = require('./routes/users');
 
@@ -16,6 +17,8 @@ db.once('open', () => console.log('Connected successfully to database'));
 
 // Rutas y Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 process.on('uncaughtException', (err, origin) => {
   throw new Error(`${origin} ${err.name}: ${err.message}.`);
 });
@@ -27,8 +30,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use('/', cardsRouter);
-app.use('/', usersRouter);
+// Rutas abiertas
 app.post('/signin', login);
 app.post(
   '/signup',
@@ -43,6 +45,11 @@ app.post(
   }),
   createUser,
 );
+
+// Rutas protegidas
+app.use(auth);
+app.use('/', cardsRouter);
+app.use('/', usersRouter);
 
 // Control de errores
 

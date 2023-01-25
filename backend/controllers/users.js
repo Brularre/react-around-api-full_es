@@ -30,6 +30,20 @@ function getUser(req, res) {
     });
 }
 
+function getCurrentUser(req, res) {
+  User.findById(req.user._id)
+    .then((user) => res.send({ data: user }))
+    .catch((err) => {
+      if (err.name === 'CastError') {
+        res.status(400);
+      } else {
+        res
+          .status(500)
+          .send({ message: 'Tuvimos un problema. Intentalo más tarde.' });
+      }
+    });
+}
+
 function createUser(req, res) {
   const { name, about, avatar, email } = req.body;
   bcrypt
@@ -113,9 +127,10 @@ function login(req, res) {
 }
 
 module.exports = {
-  createUser,
   getUsers,
   getUser,
+  getCurrentUser,
+  createUser,
   updateProfile,
   updateAvatar,
   login,

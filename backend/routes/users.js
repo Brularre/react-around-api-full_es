@@ -9,6 +9,7 @@ const {
 
 router.get('/users/', getUsers);
 router.get('/users/:id', getUser);
+router.get('/users/me');
 router.patch('/users/:id', updateProfile);
 router.patch('/users/:id/avatar', updateAvatar);
 
