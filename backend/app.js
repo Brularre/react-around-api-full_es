@@ -1,5 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const cors = require('cors');
+
 const { celebrate, Joi, errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
 const validateURL = require('./utils/utils');
@@ -13,18 +15,28 @@ const usersRouter = require('./routes/users');
 const app = express();
 const { PORT = 3000 } = process.env;
 
+// Rutas y Middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
+app.options('*', cors());
+
+// Database
 mongoose.set('strictQuery', false);
 mongoose.connect('mongodb://127.0.0.1:27017/aroundb');
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'Connection error: '));
 db.once('open', () => console.log('Connected successfully to database'));
 
-// Rutas y Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
 // Logger de solicitudes
 app.use(requestLogger);
+
+// Pruebas de caida del servidor
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('El servidor va a caer');
+  }, 0);
+});
 
 // Rutas abiertas
 app.post(
@@ -53,9 +65,8 @@ app.post(
 );
 
 // Rutas protegidas
-app.use(auth);
-app.use('/', cardsRouter);
-app.use('/', usersRouter);
+app.use('/', auth, cardsRouter);
+app.use('/', auth, usersRouter);
 
 // Control de errores
 

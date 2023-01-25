@@ -47,13 +47,15 @@ function createUser(req, res, next) {
   bcrypt
     .hash(req.body.password, 10)
     .then((password) => User.create({ name, about, avatar, email, password }))
-    .then((user) => res.status(201).send({ data: user }))
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new ValidationError('Hay un problema con los datos');
+    .then((user) => {
+      if (!user) {
+        throw new RequestError(
+          'Hay un problema con la solicitud. Revisa los datos',
+        );
       }
-      next();
-    });
+      res.status(201).send({ data: user });
+    })
+    .catch(next());
 }
 
 function updateProfile(req, res, next) {
