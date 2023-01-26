@@ -13,7 +13,7 @@ const cardsRouter = require('./routes/cards');
 const usersRouter = require('./routes/users');
 
 const app = express();
-const { PORT = 3000 } = process.env;
+const { PORT = 2000 } = process.env;
 
 // Rutas y Middleware
 app.use(express.json());
@@ -44,7 +44,7 @@ app.post(
   celebrate({
     body: Joi.object().keys({
       email: Joi.string().required().email(),
-      password: Joi.string().min(8),
+      password: Joi.string(),
     }),
   }),
   login,
@@ -58,7 +58,7 @@ app.post(
       about: Joi.string().min(2).max(30),
       avatar: Joi.string().custom(validateURL),
       email: Joi.string().required().email(),
-      password: Joi.string().min(8),
+      password: Joi.string(),
     }),
   }),
   createUser,
