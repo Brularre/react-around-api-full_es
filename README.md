@@ -8,6 +8,9 @@
 
 Este ha sido el proyecto más dificil que he tenido que enfrentar al momento en Desarrollo Web. En esta iteración incluye autenticación en el backend, control centralizado de errores, unión de rutas, despliegue en servidor y mucho más.
 
+Link servidor: https://www.brularre.students.nomoredomainssbs.ru/ https://brularre.students.nomoredomainssbs.ru/
+Link api: https://api.brularre.students.nomoredomainssbs.ru/
+
 ## Tecnologías usadas
 
 - [HTML](https://html.spec.whatwg.org/)
