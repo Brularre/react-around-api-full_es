@@ -4,8 +4,6 @@ const User = require('../models/user');
 require('dotenv').config();
 
 const NotFoundError = require('../errors/not-found-err');
-const RequestError = require('../errors/request-err');
-const ValidationError = require('../errors/validation-err');
 
 // const { NODE_ENV, JWT_SECRET } = process.env;
 
@@ -23,9 +21,6 @@ function getUser(req, res, next) {
       throw new NotFoundError('No se encuentra usuario con esa id');
     })
     .then((users) => {
-      if (!users) {
-        throw new RequestError('Hay un problema con la solicitud');
-      }
       res.send({ data: users });
     })
     .catch(next);
@@ -34,9 +29,6 @@ function getUser(req, res, next) {
 function getCurrentUser(req, res, next) {
   User.findById(req.user._id)
     .then((user) => {
-      if (!user) {
-        throw new RequestError('Hay un problema con la solicitud');
-      }
       res.send({ data: user });
     })
     .catch(next);
@@ -48,14 +40,9 @@ function createUser(req, res, next) {
     .hash(req.body.password, 10)
     .then((password) => User.create({ name, about, avatar, email, password }))
     .then((user) => {
-      if (!user) {
-        throw new RequestError(
-          'Hay un problema con la solicitud. Revisa los datos',
-        );
-      }
       res.status(201).send({ data: user });
     })
-    .catch(next());
+    .catch(next);
 }
 
 function updateProfile(req, res, next) {
@@ -69,17 +56,9 @@ function updateProfile(req, res, next) {
     { runValidators: true, new: true },
   )
     .then((user) => {
-      if (!user) {
-        throw new RequestError('Hay un problema con la solicitud');
-      }
       res.send({ data: user });
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new ValidationError('Hay un problema con los datos');
-      }
-      next();
-    });
+    .catch(next);
 }
 
 function updateAvatar(req, res, next) {
@@ -92,17 +71,9 @@ function updateAvatar(req, res, next) {
     { runValidators: true, new: true },
   )
     .then((user) => {
-      if (!user) {
-        throw new RequestError('Hay un problema con la solicitud');
-      }
       res.send({ data: user });
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new ValidationError('Hay un problema con los datos');
-      }
-      next();
-    });
+    .catch(next);
 }
 
 // User Authentication
@@ -121,12 +92,7 @@ function login(req, res, next) {
       );
       res.send({ token });
     })
-    .catch((err) => {
-      if (err.name === 'ValidationError') {
-        throw new ValidationError('Correo o contraseña incorrectos');
-      }
-      next();
-    });
+    .catch(next);
 }
 
 module.exports = {

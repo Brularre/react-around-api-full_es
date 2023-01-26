@@ -1,15 +1,11 @@
 const Card = require('../models/card');
 const NotFoundError = require('../errors/not-found-err');
-const RequestError = require('../errors/request-err');
 
 function createCard(req, res, next) {
   const { name, link } = req.body;
   const owner = req.user._id;
   Card.create({ name, link, owner })
     .then((card) => {
-      if (!card) {
-        throw new RequestError('Hay un problema con la solicitud');
-      }
       res.send({ data: card });
     })
     .catch(next);
@@ -29,9 +25,6 @@ function deleteCard(req, res, next) {
       throw new NotFoundError('No se encuentra una tarjeta con esa id');
     })
     .then((card) => {
-      if (!card) {
-        throw new RequestError('Hay un problema con la solicitud');
-      }
       res.send({ data: card });
     })
     .catch(next);
@@ -47,9 +40,6 @@ function likeCard(req, res, next) {
       throw new NotFoundError('No se encuentra una tarjeta con esa id');
     })
     .then((card) => {
-      if (!card) {
-        throw new RequestError('Hay un problema con la solicitud');
-      }
       res.send({ data: card });
     })
     .catch(next);
@@ -65,9 +55,6 @@ function dislikeCard(req, res, next) {
       throw new NotFoundError('No se encuentra una tarjeta con esa id');
     })
     .then((card) => {
-      if (!card) {
-        throw new RequestError('Hay un problema con la solicitud');
-      }
       res.send({ data: card });
     })
     .catch(next);
