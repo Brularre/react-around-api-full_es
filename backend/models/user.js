@@ -24,8 +24,8 @@ const userSchema = new mongoose.Schema({
         );
       },
       message: 'Por favor intenta una URL Valida.',
-      default: 'https://pictures.s3.yandex.net/resources/avatar_1604080799.jpg',
     },
+    default: 'https://pictures.s3.yandex.net/resources/avatar_1604080799.jpg',
   },
   email: {
     type: String,
