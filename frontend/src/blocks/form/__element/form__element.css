@@ -1,0 +1,10 @@
+.form__element {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  margin: auto;
+  align-items: center;
+  padding-top: 60px;
+  height: 100%;
+  box-sizing: border-box;
+}
