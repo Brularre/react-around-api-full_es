@@ -31,12 +31,12 @@ db.once('open', () => console.log('Connected successfully to database'));
 // Logger de solicitudes
 app.use(requestLogger);
 
-// // Pruebas de caida del servidor
-// app.get('/crash-test', () => {
-//   setTimeout(() => {
-//     throw new Error('El servidor va a caer');
-//   }, 0);
-// });
+// Pruebas de caida del servidor
+app.get('/crash-test', () => {
+  setTimeout(() => {
+    throw new Error('El servidor va a caer');
+  }, 0);
+});
 
 // Rutas abiertas
 app.post(

@@ -1,5 +1,4 @@
 const Card = require('../models/card');
-const NotFoundError = require('../errors/not-found-err');
 
 function createCard(req, res, next) {
   const { name, link } = req.body;
@@ -22,7 +21,9 @@ function getCards(req, res, next) {
 function deleteCard(req, res, next) {
   Card.findByIdAndRemove(req.params.id)
     .orFail(() => {
-      throw new NotFoundError('No se encuentra una tarjeta con esa id');
+      const error = new Error('Ningún usuario encontrado con ese id');
+      error.statusCode = 404;
+      throw error;
     })
     .then((card) => {
       res.send({ data: card });
@@ -37,7 +38,9 @@ function likeCard(req, res, next) {
     { new: true },
   )
     .orFail(() => {
-      throw new NotFoundError('No se encuentra una tarjeta con esa id');
+      const error = new Error('Ningún usuario encontrado con ese id');
+      error.statusCode = 404;
+      throw error;
     })
     .then((card) => {
       res.send({ data: card });
@@ -52,7 +55,9 @@ function dislikeCard(req, res, next) {
     { new: true },
   )
     .orFail(() => {
-      throw new NotFoundError('No se encuentra una tarjeta con esa id');
+      const error = new Error('Ningún usuario encontrado con ese id');
+      error.statusCode = 404;
+      throw error;
     })
     .then((card) => {
       res.send({ data: card });

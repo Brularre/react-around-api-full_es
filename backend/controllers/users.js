@@ -3,8 +3,6 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user');
 require('dotenv').config();
 
-const NotFoundError = require('../errors/not-found-err');
-
 // const { NODE_ENV, JWT_SECRET } = process.env;
 
 // User DB Interaction
@@ -18,7 +16,9 @@ function getUsers(req, res, next) {
 function getUser(req, res, next) {
   User.findById(req.params.id)
     .orFail(() => {
-      throw new NotFoundError('No se encuentra usuario con esa id');
+      const error = new Error('Ningún usuario encontrado con ese id');
+      error.statusCode = 404;
+      throw error;
     })
     .then((users) => {
       res.send({ data: users });
