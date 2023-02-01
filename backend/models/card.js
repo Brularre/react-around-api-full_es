@@ -12,9 +12,8 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Requiere un enlace de imagen'],
     validate: {
-        validator: (v) => isURL(v),
-        message: 'Por favor intenta una URL Valida.',
-      },
+      validator: (v) => isURL(v),
+      message: 'Por favor intenta una URL Valida.',
     },
   },
   owner: {
