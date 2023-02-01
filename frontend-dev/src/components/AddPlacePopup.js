@@ -7,7 +7,7 @@ export default function AddPlacePopup({
 }) {
   return (
     <div
-      className={`popup ${isOpen ? 'popup_active' : ''}`}
+      className={`popup ${isOpen ? "popup_active" : ""}`}
       id="popup__add-form"
     >
       <form

@@ -64,7 +64,7 @@ function App() {
           .catch((err) => console.log(err));
       }
     }
-  }, [history]);
+  }, [history, history.location.pathname]);
 
   // Add Place Popup Logic
 
@@ -181,6 +181,39 @@ function App() {
     openEditAvatar(false);
     openInfo(false);
   }
+
+  useEffect(() => {
+    const closeByEsc = (evt) => {
+      if (evt.key === "Escape") {
+        closeAllPopups();
+      }
+    };
+
+    window.addEventListener("keydown", closeByEsc);
+
+    return () => window.removeEventListener("click", closeByEsc);
+  }, []);
+
+  // useEffect(() => {
+  //   if (
+  //     isCardPopupOpen ||
+  //     isDeleteCardOpen ||
+  //     isAddPlaceOpen ||
+  //     isEditProfileOpen ||
+  //     isAvatarOpen ||
+  //     isInfoTooltipOpen
+  //   ) {
+  //     const closeByOutsideClick = (evt) => {
+  //       const parent = evt.target.closest(".popup");
+  //       if (!parent) {
+  //         closeAllPopups();
+  //       }
+  //     };
+  //     window.addEventListener("click", closeByOutsideClick);
+
+  //     return () => window.removeEventListener("click", closeByOutsideClick);
+  //   }
+  // }, []);
 
   // Login, Register and Logout
 

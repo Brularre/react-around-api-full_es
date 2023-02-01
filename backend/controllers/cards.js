@@ -66,6 +66,7 @@ const NotFoundError = require('../errors/not-found-err');
 // }
 
 /* Original */
+
 function createCard(req, res, next) {
   const { name, link } = req.body;
   const owner = req.user._id;

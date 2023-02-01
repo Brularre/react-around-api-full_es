@@ -10,7 +10,7 @@ export default function Card({
 }) {
   const value = useContext(CurrentUserContext);
 
-  const isOwn = cardData.owner[0] === value.currentUser._id;
+  const isOwn = cardData.owner === value.currentUser._id;
   const isLiked = cardData.likes.some((i) => i === value.currentUser._id);
 
   const cardDeleteButtonClassName = `${
