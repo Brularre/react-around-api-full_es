@@ -5,6 +5,12 @@ class Api {
   }
 
   async getUser() {
+    this._headers = {
+      headers: {
+        authorization: `Bearer ${localStorage.getItem('jwt')}`,
+        'Content-Type': 'application/json; charset=UTF-8',
+      },
+    };
     try {
       const res = await fetch(`${this._address}/users/me`, {
         headers: this._headers,
@@ -18,7 +24,7 @@ class Api {
   async setUserInfo(userInfo, id) {
     try {
       return await fetch(`${this._address}/users/${id}`, {
-        method: "PATCH",
+        method: 'PATCH',
         body: JSON.stringify({
           name: userInfo.name,
           about: userInfo.about,
@@ -33,7 +39,7 @@ class Api {
   async setAvatar(avatar, id) {
     try {
       return await fetch(`${this._address}/users/${id}/avatar`, {
-        method: "PATCH",
+        method: 'PATCH',
         body: JSON.stringify({
           avatar: avatar,
         }),
@@ -58,7 +64,7 @@ class Api {
   async addCard(name, link) {
     try {
       const res = await fetch(`${this._address}/cards`, {
-        method: "POST",
+        method: 'POST',
         body: JSON.stringify({
           name: name,
           link: link,
@@ -75,7 +81,7 @@ class Api {
     if (isLiked) {
       try {
         const res = await fetch(`${this._address}/cards/${id}/likes`, {
-          method: isLiked ? "PUT" : "DELETE",
+          method: isLiked ? 'PUT' : 'DELETE',
           headers: this._headers,
         });
         return res.ok ? await res.json() : Promise.reject(res.status);
@@ -88,7 +94,7 @@ class Api {
   async deleteCard(id) {
     try {
       return fetch(`${this._address}/cards/${id}`, {
-        method: "DELETE",
+        method: 'DELETE',
         headers: this._headers,
       });
     } catch (err) {
@@ -98,10 +104,10 @@ class Api {
 }
 
 const api = new Api({
-  address: "https://api.brularre.students.nomoredomainssbs.ru",
+  address: 'https://api.brularre.students.nomoredomainssbs.ru',
   headers: {
-    authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2M2QyMDMxYTU1NzBkN2Y4NzI5NTRiZGYiLCJpYXQiOjE2NzQ3MTYxMTEsImV4cCI6MTY3NTMyMDkxMX0.JaKI73-EZ-WNYylTlDL_d5cWl6qaclA83wIL4MpH4lc`,
-    "Content-Type": "application/json; charset=UTF-8",
+    authorization: `Bearer ${localStorage.getItem('jwt')}`,
+    'Content-Type': 'application/json; charset=UTF-8',
   },
 });
 

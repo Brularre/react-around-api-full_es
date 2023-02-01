@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const isURL = require('validator/lib/isURL');
 
 const cardSchema = new mongoose.Schema({
   name: {
@@ -11,12 +12,9 @@ const cardSchema = new mongoose.Schema({
     type: String,
     required: [true, 'Requiere un enlace de imagen'],
     validate: {
-      validator(v) {
-        return /^(http(s):\/\/.)[-a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)$/.test(
-          v,
-        );
+        validator: (v) => isURL(v),
+        message: 'Por favor intenta una URL Valida.',
       },
-      message: 'Por favor intenta una URL Valida.',
     },
   },
   owner: {
