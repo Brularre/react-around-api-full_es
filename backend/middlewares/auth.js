@@ -33,7 +33,7 @@ function auth(req, res, next) {
   let payload;
 
   try {
-    payload = jwt.verify(token, 'salt-temporal');
+    payload = jwt.verify(token, 'secret-development');
   } catch (err) {
     return handleAuthError();
   }
