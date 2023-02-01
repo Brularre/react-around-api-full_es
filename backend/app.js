@@ -65,8 +65,10 @@ app.post(
 );
 
 // Rutas protegidas
-app.use('/cards', auth, cardsRouter);
-app.use('/users', auth, usersRouter);
+// app.use('/cards', auth, cardsRouter);
+// app.use('/users', auth, usersRouter);
+app.use('/cards', cardsRouter);
+app.use('/users', usersRouter);
 
 // Control de errores
 
