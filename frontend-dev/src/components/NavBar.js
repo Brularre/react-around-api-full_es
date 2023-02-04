@@ -1,16 +1,16 @@
-import { useContext } from "react";
-import { NavLink, useLocation } from "react-router-dom";
-import { CurrentUserContext } from "../contexts/CurrentUserContext";
+import { useContext } from 'react';
+import { NavLink, useLocation } from 'react-router-dom';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-function NavBar({ onLogout, userEmail }) {
-  const { isLogged } = useContext(CurrentUserContext);
+function NavBar({ onLogout }) {
+  const { currentUser, isLoggedIn } = useContext(CurrentUserContext);
   const currentPath = useLocation().pathname;
-  const linkPath = currentPath === "/signup" ? "/signin" : "signup";
-  const linkText = currentPath === "/signup" ? "Ingresar" : "Registro";
+  const linkPath = currentPath === '/signup' ? '/signin' : 'signup';
+  const linkText = currentPath === '/signup' ? 'Ingresar' : 'Registro';
 
   return (
     <nav className="navbar">
-      {!isLogged && (
+      {!isLoggedIn && (
         <NavLink
           exact
           className="navbar__item"
@@ -20,8 +20,8 @@ function NavBar({ onLogout, userEmail }) {
           {linkText}
         </NavLink>
       )}
-      {isLogged && <p className="navbar__user">{userEmail}</p>}
-      {isLogged && (
+      {isLoggedIn && <p className="navbar__user">{currentUser.email}</p>}
+      {isLoggedIn && (
         <button onClick={onLogout} className="navbar__logout">
           Cerrar sesión
         </button>

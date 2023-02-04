@@ -1,26 +1,19 @@
-import { useEffect, useRef } from "react";
+import { useContext } from 'react';
+import { AppMethodsContext } from '../contexts/AppMethodsContext';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-export default function EditAvatarPopup({
-  isOpen,
-  onClose,
-  avatar,
-  onUpdateAvatar,
-  onAvatarChange,
-}) {
-  const inputRef = useRef(avatar);
+export default function EditAvatarPopup({ isOpen, onClose }) {
+  const { handleInputChange, handleUpdateUser } = useContext(AppMethodsContext);
+  const { currentUser } = useContext(CurrentUserContext);
 
   function handleSubmit(evt) {
     evt.preventDefault();
-    onUpdateAvatar(inputRef.current.value);
+    handleUpdateUser(`users/${currentUser._id}/avatar`, ['avatar']);
   }
-
-  useEffect(() => {
-    inputRef.current.value = "";
-  }, [isOpen]);
 
   return (
     <div
-      className={`popup ${isOpen ? "popup_active" : ""}`}
+      className={`popup ${isOpen ? 'popup_active' : ''}`}
       id="popup__edit-avatar"
     >
       <form
@@ -38,13 +31,12 @@ export default function EditAvatarPopup({
         <div className="popup__input-container">
           <input
             type="url"
-            name="profile-avatar"
+            name="avatar"
             id="profile-avatar"
             className="popup__input"
             placeholder="Enlace a imagen"
             required
-            ref={inputRef}
-            onChange={onAvatarChange}
+            onChange={handleInputChange}
           />
           <span className="popup__error-profile-avatar"></span>
         </div>

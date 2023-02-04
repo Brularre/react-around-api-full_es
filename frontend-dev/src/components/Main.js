@@ -1,10 +1,11 @@
-import { useContext } from "react";
-import Card from "./Card.js";
+import { useContext, useEffect } from 'react';
+import Card from './Card.js';
 
-import { CurrentUserContext } from "../contexts/CurrentUserContext.js";
+import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
 
 export default function Main({
   cards,
+  renderCards,
   onCardClick,
   onCardLike,
   onDeleteCardClick,
@@ -12,7 +13,12 @@ export default function Main({
   onEditProfileClick,
   onEditAvatarClick,
 }) {
-  const value = useContext(CurrentUserContext);
+  const { currentUser } = useContext(CurrentUserContext);
+
+  useEffect(() => {
+    renderCards();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
@@ -25,21 +31,21 @@ export default function Main({
             ></div>
           </div>
           <img
-            src={value.currentUser.avatar}
+            src={currentUser.avatar}
             alt="Imagen de perfil del usuario"
             className="profile__avatar"
           />
         </div>
         <div className="profile__info">
           <span>
-            <h1 className="profile__name">{value.currentUser.name}</h1>
+            <h1 className="profile__name">{currentUser.name}</h1>
             <button
               type="button"
               onClick={onEditProfileClick}
               className="profile__edit-btn"
             ></button>
           </span>
-          <p className="profile__about">{value.currentUser.about}</p>
+          <p className="profile__about">{currentUser.about}</p>
         </div>
         <button
           type="button"

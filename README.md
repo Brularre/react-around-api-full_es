@@ -1,6 +1,6 @@
 <div id="#inicio"></div>
 
-# Alrededor de Estados Unidos - Edición React - Proyecto Decimo Quinto Sprint de Practicum por <a href="https://github.com/brularre/">Bruno Larraín</a>
+# Alrededor de Estados Unidos - Edición React - Decimo Quinto Sprint de Practicum por <a href="https://github.com/brularre/">Bruno Larraín</a>
 
 ## Sobre el Proyecto
 
@@ -10,6 +10,8 @@ Este ha sido el proyecto más dificil que he tenido que enfrentar al momento en 
 
 Link servidor: https://www.brularre.students.nomoredomainssbs.ru/ https://brularre.students.nomoredomainssbs.ru/
 Link api: https://api.brularre.students.nomoredomainssbs.ru/
+
+Incluye una carpeta del frontend. Desplegado todo en las URL descritas.
 
 ## Tecnologías usadas
 
@@ -63,6 +65,6 @@ El proyecto se considerará terminado una vez entregado con todas las correccion
 
 Bruno Larraín - [Github](https://github.com/Brularre/) - contacto@brularre.com
 
-Link Proyecto Link: [https://github.com/Brularre/react-around-auth_es](https://github.com/Brularre/react-around-api-full_es)
+Link Proyecto Link: [https://github.com/Brularre/react-around-api-full_es](https://github.com/Brularre/react-around-api-full_es)
 
 <p align="right">(<a href="#inicio">Volver al inicio</a>)</p>

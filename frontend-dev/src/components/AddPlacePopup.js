@@ -1,13 +1,14 @@
-export default function AddPlacePopup({
-  isOpen,
-  onClose,
-  onAddPlaceSubmit,
-  onPlaceChange,
-  onLinkChange,
-}) {
+import { useContext } from 'react';
+import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
+import { AppMethodsContext } from '../contexts/AppMethodsContext.js';
+
+export default function AddPlacePopup({ isOpen, onClose, onAddPlaceSubmit }) {
+  const { currentUser } = useContext(CurrentUserContext);
+  const { handleInputChange } = useContext(AppMethodsContext);
+
   return (
     <div
-      className={`popup ${isOpen ? "popup_active" : ""}`}
+      className={`popup ${isOpen ? 'popup_active' : ''}`}
       id="popup__add-form"
     >
       <form
@@ -32,7 +33,7 @@ export default function AddPlacePopup({
             minLength="2"
             maxLength="30"
             required
-            onChange={onPlaceChange}
+            onChange={handleInputChange}
           />
           <span className="popup__error-place-name"></span>
         </div>
@@ -44,7 +45,7 @@ export default function AddPlacePopup({
             className="popup__input"
             placeholder="Enlace a la imagen"
             required
-            onChange={onLinkChange}
+            onChange={handleInputChange}
           />
           <span className="popup__error-place-link"></span>
         </div>

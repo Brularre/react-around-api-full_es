@@ -1,50 +1,31 @@
+import { BASE_URL } from './consts';
+import { reqConfig } from './utils';
+
 class Api {
-  constructor({ address, headers }) {
+  constructor({ address }) {
     this._address = address;
-    this._headers = headers;
   }
 
   async getUser() {
-    this._headers = {
-      headers: {
-        authorization: `Bearer ${localStorage.getItem('jwt')}`,
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-    };
     try {
-      const res = await fetch(`${this._address}/users/me`, {
-        headers: this._headers,
-      });
+      const res = await fetch(
+        `${this._address}/users/me`,
+        reqConfig('GET', true, false),
+      );
       return res.ok ? await res.json() : Promise.reject(res.status);
     } catch (err) {
       throw new Error(`Error ${err}.`);
     }
   }
 
-  async setUserInfo(userInfo, id) {
+  async setUserInfo(uri, fields) {
     try {
-      return await fetch(`${this._address}/users/${id}`, {
-        method: 'PATCH',
-        body: JSON.stringify({
-          name: userInfo.name,
-          about: userInfo.about,
+      return await fetch(
+        `${this._address}/${uri}`,
+        reqConfig('PATCH', true, true, {
+          ...fields,
         }),
-        headers: this._headers,
-      });
-    } catch (err) {
-      throw new Error(`Error ${err}.`);
-    }
-  }
-
-  async setAvatar(avatar, id) {
-    try {
-      return await fetch(`${this._address}/users/${id}/avatar`, {
-        method: 'PATCH',
-        body: JSON.stringify({
-          avatar: avatar,
-        }),
-        headers: this._headers,
-      });
+      );
     } catch (err) {
       throw new Error(`Error ${err}.`);
     }
@@ -52,9 +33,10 @@ class Api {
 
   async getCards() {
     try {
-      const res = await fetch(`${this._address}/cards`, {
-        headers: this._headers,
-      });
+      const res = await fetch(
+        `${this._address}/cards`,
+        reqConfig('GET', true, false, {}),
+      );
       return res.ok ? await res.json() : Promise.reject(res.status);
     } catch (err) {
       throw new Error(`Error ${err}.`);
@@ -63,14 +45,10 @@ class Api {
 
   async addCard(name, link) {
     try {
-      const res = await fetch(`${this._address}/cards`, {
-        method: 'POST',
-        body: JSON.stringify({
-          name: name,
-          link: link,
-        }),
-        headers: this._headers,
-      });
+      const res = await fetch(
+        `${this._address}/cards`,
+        reqConfig('POST', true, true, name, link),
+      );
       return res.ok ? await res.json() : Promise.reject(res.status);
     } catch (err) {
       throw new Error(`Error ${err}.`);
@@ -104,11 +82,7 @@ class Api {
 }
 
 const api = new Api({
-  address: 'https://api.brularre.students.nomoredomainssbs.ru',
-  headers: {
-    authorization: `Bearer ${localStorage.getItem('jwt')}`,
-    'Content-Type': 'application/json; charset=UTF-8',
-  },
+  address: BASE_URL,
 });
 
 export default api;

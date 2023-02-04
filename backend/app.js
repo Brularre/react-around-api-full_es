@@ -4,7 +4,6 @@ const cors = require('cors');
 
 const { celebrate, Joi, errors } = require('celebrate');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
-const validateURL = require('./utils/utils');
 require('dotenv').config();
 
 const { login, createUser } = require('./controllers/users');
@@ -31,13 +30,6 @@ db.once('open', () => console.log('Connected successfully to database'));
 // Logger de solicitudes
 app.use(requestLogger);
 
-// Pruebas de caida del servidor
-app.get('/crash-test', () => {
-  setTimeout(() => {
-    throw new Error('El servidor va a caer');
-  }, 0);
-});
-
 // Rutas abiertas
 app.post(
   '/signin',
@@ -54,9 +46,6 @@ app.post(
   '/signup',
   celebrate({
     body: Joi.object().keys({
-      name: Joi.string().min(2).max(30),
-      about: Joi.string().min(2).max(30),
-      avatar: Joi.string().custom(validateURL),
       email: Joi.string().required().email(),
       password: Joi.string().min(8),
     }),
@@ -67,8 +56,6 @@ app.post(
 // Rutas protegidas
 app.use('/cards', auth, cardsRouter);
 app.use('/users', auth, usersRouter);
-// app.use('/cards', cardsRouter);
-// app.use('/users', usersRouter);
 
 // Control de errores
 
