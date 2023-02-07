@@ -1,9 +1,10 @@
 import { useContext } from 'react';
-import { AppMethodsContext } from '../contexts/AppMethodsContext';
+import { AppContext } from '../contexts/AppContext';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-export default function EditProfilePopup({ isOpen, onClose }) {
-  const { handleInputChange, handleUpdateUser } = useContext(AppMethodsContext);
+export default function EditProfilePopup() {
+  const { isOpen, closeAllPopups, handleInputChange, handleUpdateUser } =
+    useContext(AppContext);
   const { currentUser } = useContext(CurrentUserContext);
 
   function handleSubmit(evt) {
@@ -13,7 +14,7 @@ export default function EditProfilePopup({ isOpen, onClose }) {
 
   return (
     <div
-      className={`popup ${isOpen ? 'popup_active' : ''}`}
+      className={`popup ${isOpen.editProfile ? 'popup_active' : ''}`}
       id="popup__edit-profile"
     >
       <form
@@ -24,7 +25,7 @@ export default function EditProfilePopup({ isOpen, onClose }) {
       >
         <button
           type="button"
-          onClick={onClose}
+          onClick={closeAllPopups}
           className="popup__close-btn"
         ></button>
         <h2 className="popup__form-title">Editar Perfil</h2>
@@ -54,7 +55,7 @@ export default function EditProfilePopup({ isOpen, onClose }) {
             required
             onChange={handleInputChange}
           />
-          <span className="popup__error-profile-about"></span>
+          <span className={'popup__error-profile-about'}></span>
         </div>
         <button type="submit" className="popup__submit-btn">
           Guardar

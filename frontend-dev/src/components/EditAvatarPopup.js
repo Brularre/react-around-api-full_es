@@ -1,9 +1,10 @@
 import { useContext } from 'react';
-import { AppMethodsContext } from '../contexts/AppMethodsContext';
+import { AppContext } from '../contexts/AppContext';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 
-export default function EditAvatarPopup({ isOpen, onClose }) {
-  const { handleInputChange, handleUpdateUser } = useContext(AppMethodsContext);
+export default function EditAvatarPopup() {
+  const { isOpen, closeAllPopups, handleInputChange, handleUpdateUser } =
+    useContext(AppContext);
   const { currentUser } = useContext(CurrentUserContext);
 
   function handleSubmit(evt) {
@@ -13,7 +14,7 @@ export default function EditAvatarPopup({ isOpen, onClose }) {
 
   return (
     <div
-      className={`popup ${isOpen ? 'popup_active' : ''}`}
+      className={`popup ${isOpen.editAvatar ? 'popup_active' : ''}`}
       id="popup__edit-avatar"
     >
       <form
@@ -24,7 +25,7 @@ export default function EditAvatarPopup({ isOpen, onClose }) {
       >
         <button
           type="button"
-          onClick={onClose}
+          onClick={closeAllPopups}
           className="popup__close-btn"
         ></button>
         <h2 className="popup__form-title">Cambiar Foto de Perfil</h2>

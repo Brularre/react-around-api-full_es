@@ -1,17 +1,15 @@
-export default function PopupWithForm({
-  name,
-  title,
-  inputs,
-  submit,
-  isOpen,
-  onClose,
-}) {
+import { useContext } from 'react';
+import { AppContext } from '../contexts/AppContext';
+
+export default function PopupWithForm({ name, title, inputs, submit, isOpen }) {
+  const { closeAllPopups } = useContext(AppContext);
+
   return (
-    <div className={`popup ${isOpen ? "popup_active" : ""}`} id={name}>
+    <div className={`popup ${isOpen ? 'popup_active' : ''}`} id={name}>
       <form className="popup__form" name={name} noValidate>
         <button
           type="button"
-          onClick={onClose}
+          onClick={closeAllPopups}
           className="popup__close-btn"
         ></button>
         <h2 className="popup__form-title">{title}</h2>

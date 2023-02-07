@@ -35,7 +35,7 @@ class Api {
     try {
       const res = await fetch(
         `${this._address}/cards`,
-        reqConfig('GET', true, false, {}),
+        reqConfig('GET', true, false, ''),
       );
       return res.ok ? await res.json() : Promise.reject(res.status);
     } catch (err) {
@@ -47,7 +47,7 @@ class Api {
     try {
       const res = await fetch(
         `${this._address}/cards`,
-        reqConfig('POST', true, true, name, link),
+        reqConfig('POST', true, true, { name, link }),
       );
       return res.ok ? await res.json() : Promise.reject(res.status);
     } catch (err) {
@@ -56,25 +56,23 @@ class Api {
   }
 
   async changeLikeCardStatus(id, isLiked) {
-    if (isLiked) {
-      try {
-        const res = await fetch(`${this._address}/cards/${id}/likes`, {
-          method: isLiked ? 'PUT' : 'DELETE',
-          headers: this._headers,
-        });
-        return res.ok ? await res.json() : Promise.reject(res.status);
-      } catch (err) {
-        throw new Error(`Error ${err}.`);
-      }
+    try {
+      const res = await fetch(
+        `${this._address}/cards/${id}/likes`,
+        reqConfig(isLiked ? 'DELETE' : 'PUT', true, false, ''),
+      );
+      return res.ok ? await res.json() : Promise.reject(res.status);
+    } catch (err) {
+      throw new Error(`Error ${err}.`);
     }
   }
 
   async deleteCard(id) {
     try {
-      return fetch(`${this._address}/cards/${id}`, {
-        method: 'DELETE',
-        headers: this._headers,
-      });
+      return fetch(
+        `${this._address}/cards/${id}`,
+        reqConfig('DELETE', true, false, ''),
+      );
     } catch (err) {
       throw new Error(`Error ${err}.`);
     }

@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+
 function getUserToken() {
   return localStorage.getItem('jwt');
 }
@@ -13,4 +15,11 @@ function reqConfig(method, needsAuth, hasBody, { ...bodyValues }) {
   };
 }
 
-export { getUserToken, reqConfig };
+const OnWindowEvt = (evt, callback) => {
+  useEffect(() => {
+    window.addEventListener(evt, callback);
+    return () => window.removeEventListener(evt, callback);
+  }, [evt, callback]);
+};
+
+export { getUserToken, reqConfig, OnWindowEvt };

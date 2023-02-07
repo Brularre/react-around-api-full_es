@@ -1,19 +1,17 @@
 import { useContext, useEffect } from 'react';
 import Card from './Card.js';
 
-import { CurrentUserContext } from '../contexts/CurrentUserContext.js';
+import { CurrentUserContext } from '../contexts/CurrentUserContext';
+import { AppContext } from '../contexts/AppContext';
 
 export default function Main({
   cards,
   renderCards,
-  onCardClick,
   onCardLike,
   onDeleteCardClick,
-  onAddPlaceClick,
-  onEditProfileClick,
-  onEditAvatarClick,
 }) {
   const { currentUser } = useContext(CurrentUserContext);
+  const { openPopup } = useContext(AppContext);
 
   useEffect(() => {
     renderCards();
@@ -26,7 +24,7 @@ export default function Main({
         <div className="profile__avatar-wrapper">
           <div className="profile__avatar-overlay">
             <div
-              onClick={onEditAvatarClick}
+              onClick={() => openPopup('editAvatar')}
               className="profile__avatar-edit-icon"
             ></div>
           </div>
@@ -41,7 +39,7 @@ export default function Main({
             <h1 className="profile__name">{currentUser.name}</h1>
             <button
               type="button"
-              onClick={onEditProfileClick}
+              onClick={() => openPopup('editProfile')}
               className="profile__edit-btn"
             ></button>
           </span>
@@ -49,7 +47,7 @@ export default function Main({
         </div>
         <button
           type="button"
-          onClick={onAddPlaceClick}
+          onClick={() => openPopup('addPlace')}
           className="profile__add-btn"
         ></button>
       </section>
@@ -58,9 +56,9 @@ export default function Main({
           <Card
             cardData={card}
             key={card._id}
-            onCardClick={onCardClick}
+            onCardClick={() => openPopup('imagePopup', card)}
             onCardLike={onCardLike}
-            onCardDelete={onDeleteCardClick}
+            onCardDelete={() => openPopup('deleteCard', card)}
           />
         ))}
       </main>

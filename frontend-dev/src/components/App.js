@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Route, Switch, useHistory } from 'react-router-dom';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
-import { AppMethodsContext } from '../contexts/AppMethodsContext';
+import { AppContext } from '../contexts/AppContext';
+import { OnWindowEvt } from '../utils/utils';
+import { findDOMNode } from 'react-dom';
 
 import Header from './Header';
 import Main from './Main';
@@ -22,12 +24,19 @@ import '../index.css';
 function App() {
   const history = useHistory();
 
-  // User logic & methods
+  // App States
   const [currentUser, setCurrentUser] = useState({});
   const [cards, setCards] = useState([]);
-
   const [inputValues, setInputValues] = useState({});
   const [selectedCard, setSelectedCard] = useState('');
+  const [isOpen, setIsOpen] = useState({
+    imagePopup: false,
+    deleteCard: false,
+    addPlace: false,
+    editProfile: false,
+    editAvatar: false,
+    infoTooltip: false,
+  });
 
   // Get Authorized User Data
   useEffect(() => {
@@ -46,8 +55,6 @@ function App() {
         .catch((err) => console.log(err));
     }
   }, [history, history.location.pathname]);
-
-  // Edit Profile Logic
 
   function handleInputChange(evt) {
     const { name, value } = evt.target;
@@ -69,10 +76,9 @@ function App() {
         {},
       ),
     });
+    setInputValues({});
     closeAllPopups();
   }
-
-  // Cards logic & methods
 
   function renderCards() {
     api
@@ -85,21 +91,16 @@ function App() {
 
   function handleAddPlace(evt) {
     evt.preventDefault();
-    // api.addCard(placeName, placeLink).then((newCard) => {
-    // setCards([newCard.data, ...cards]);
-    // });
+    api.addCard(inputValues.name, inputValues.link).then((newCard) => {
+      setCards([newCard.data, ...cards]);
+    });
+    setInputValues({});
     closeAllPopups();
   }
 
-  // Card Element Logic
-  function handleCardClick(card) {
-    setSelectedCard(card);
-    setCardPopupOpen(true);
-  }
-
   function handleCardLike(card) {
-    const isLiked = card.likes.some((i) => i._id === currentUser._id);
-    api.changeLikeCardStatus(card._id, !isLiked).then((newCard) => {
+    const isLiked = card.likes.some((i) => i === currentUser._id);
+    api.changeLikeCardStatus(card._id, isLiked).then((newCard) => {
       setCards((state) =>
         state.map((c) => (c._id === card._id ? newCard.data : c)),
       );
@@ -114,76 +115,42 @@ function App() {
 
   // Open and close Popups
 
-  const [isCardPopupOpen, setCardPopupOpen] = useState(false);
-  const [isDeleteCardOpen, openDeleteCard] = useState(false);
-  const [isAddPlaceOpen, openAddPlace] = useState(false);
-  const [isEditProfileOpen, openEditProfile] = useState(false);
-  const [isAvatarOpen, openEditAvatar] = useState(false);
-  const [isInfoTooltipOpen, openInfo] = useState(false);
-
-  function openDeleteCardPopup(card) {
-    setSelectedCard(card);
-    openDeleteCard(true);
-  }
-
-  function openAddPlacePopup() {
-    openAddPlace(true);
-  }
-
-  function openEditProfilePopup() {
-    openEditProfile(true);
-  }
-
-  function openAvatarPopup() {
-    openEditAvatar(true);
-  }
-
-  function openInfoTooltip() {
-    openInfo(true);
+  function openPopup(popup, card = null) {
+    if (card) {
+      setSelectedCard(card);
+    }
+    setIsOpen({ ...isOpen, [popup]: true });
   }
 
   function closeAllPopups() {
+    setIsOpen({
+      ...isOpen,
+      imagePopup: false,
+      deleteCard: false,
+      addPlace: false,
+      editProfile: false,
+      editAvatar: false,
+      infoTooltip: false,
+    });
     setSelectedCard('');
-    setCardPopupOpen(false);
-    openDeleteCard(false);
-    openAddPlace(false);
-    openEditProfile(false);
-    openEditAvatar(false);
-    openInfo(false);
   }
 
-  useEffect(() => {
-    const closeByEsc = (evt) => {
-      if (evt.key === 'Escape') {
-        closeAllPopups();
-      }
-    };
+  const closeByEsc = (evt) => {
+    if (evt.key === 'Escape') {
+      closeAllPopups();
+    }
+  };
 
-    window.addEventListener('keydown', closeByEsc);
+  const closeByOutsideClick = (evt) => {
+    const domNode = findDOMNode(this);
 
-    return () => window.removeEventListener('click', closeByEsc);
-  }, []);
+    if (!domNode || !domNode.contains(evt.target)) {
+      closeAllPopups();
+    }
+  };
 
-  // useEffect(() => {
-  //   if (
-  //     isCardPopupOpen ||
-  //     isDeleteCardOpen ||
-  //     isAddPlaceOpen ||
-  //     isEditProfileOpen ||
-  //     isAvatarOpen ||
-  //     isInfoTooltipOpen
-  //   ) {
-  //     const closeByOutsideClick = (evt) => {
-  //       const parent = evt.target.closest('.popup');
-  //       if (!parent) {
-  //         closeAllPopups();
-  //       }
-  //     };
-  //     window.addEventListener('click', closeByOutsideClick);
-
-  //     return () => window.removeEventListener('click', closeByOutsideClick);
-  //   }
-  // }, []);
+  OnWindowEvt('keydown', closeByEsc);
+  OnWindowEvt('click', closeByOutsideClick);
 
   // Login, Register and Logout
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -201,7 +168,7 @@ function App() {
       })
       .catch((err) => {
         setIsSuccess(false);
-        openInfoTooltip(true);
+        openPopup('infoTooltip');
         console.log(err);
       });
   }
@@ -228,22 +195,25 @@ function App() {
         console.log(err);
       })
       .finally(() => {
-        openInfoTooltip(true);
+        openPopup('infoTooltip');
       });
   }
 
   return (
     <>
-      <AppMethodsContext.Provider
-        value={{ handleInputChange, closeAllPopups, handleUpdateUser }}
+      <AppContext.Provider
+        value={{
+          isOpen,
+          openPopup,
+          closeAllPopups,
+          handleInputChange,
+          handleUpdateUser,
+          selectedCard,
+        }}
       >
         <CurrentUserContext.Provider value={{ currentUser, isLoggedIn }}>
           <Header onLogout={handleLogout} userEmail={currentUser.email} />
-          <InfoTooltip
-            isOpen={isInfoTooltipOpen}
-            onClose={closeAllPopups}
-            isSuccess={isSuccess}
-          />
+          <InfoTooltip isSuccess={isSuccess} />
 
           <Switch>
             <Route path="/signup">
@@ -256,39 +226,21 @@ function App() {
               <Main
                 cards={cards}
                 renderCards={renderCards}
-                onCardClick={handleCardClick}
                 onCardLike={handleCardLike}
-                onDeleteCardClick={openDeleteCardPopup}
-                onAddPlaceClick={openAddPlacePopup}
-                onEditProfileClick={openEditProfilePopup}
-                onEditAvatarClick={openAvatarPopup}
               />
               <Footer />
             </ProtectedRoute>
           </Switch>
-          <ImagePopup
-            isOpen={isCardPopupOpen}
-            onClose={closeAllPopups}
-            card={selectedCard}
-          />
+          <ImagePopup card={selectedCard} />
           <DeleteCardPopup
-            isOpen={isDeleteCardOpen}
-            onClose={closeAllPopups}
             card={selectedCard}
             onCardDeleteSubmit={handleCardDelete}
           />
-          <AddPlacePopup
-            isOpen={isAddPlaceOpen}
-            onClose={closeAllPopups}
-            onAddPlaceSubmit={handleAddPlace}
-          />
-          <EditProfilePopup
-            isOpen={isEditProfileOpen}
-            onClose={closeAllPopups}
-          />
-          <EditAvatarPopup isOpen={isAvatarOpen} onClose={closeAllPopups} />
+          <AddPlacePopup onAddPlaceSubmit={handleAddPlace} />
+          <EditProfilePopup />
+          <EditAvatarPopup />
         </CurrentUserContext.Provider>
-      </AppMethodsContext.Provider>
+      </AppContext.Provider>
     </>
   );
 }

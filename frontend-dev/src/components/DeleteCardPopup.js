@@ -1,16 +1,17 @@
-export default function DeleteCardPopup({
-  isOpen,
-  onClose,
-  card,
-  onCardDeleteSubmit,
-}) {
+import { useContext } from 'react';
+import { AppContext } from '../contexts/AppContext';
+
+export default function DeleteCardPopup({ onCardDeleteSubmit }) {
+  const { isOpen, closeAllPopups, card } = useContext(AppContext);
+
   function handleSubmit(evt) {
     evt.preventDefault();
     onCardDeleteSubmit(card);
   }
+
   return (
     <div
-      className={`popup ${isOpen ? "popup_active" : ""}`}
+      className={`popup ${isOpen.deleteCard ? 'popup_active' : ''}`}
       id="popup__delete-card"
     >
       <form
@@ -21,7 +22,7 @@ export default function DeleteCardPopup({
       >
         <button
           type="button"
-          onClick={onClose}
+          onClick={closeAllPopups}
           className="popup__close-btn"
         ></button>
         <h2 className="popup__form-title">¿Estás seguro/a?</h2>
